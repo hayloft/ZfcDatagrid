@@ -56,6 +56,10 @@ class Filter
 
     const BETWEEN = '%s <> %s';
 
+    const CONJUNCTION = 'CONJUNCTION';
+
+    const DISJUNCTION = 'DISJUNCTION';
+
     /**
      *
      * @var Column\AbstractColumn
@@ -67,6 +71,13 @@ class Filter
     private $value;
 
     private $displayColumnValue;
+
+    /**
+     * Conjunction or Disjunction
+     *
+     * @var string
+     */
+    private $whereType = null;
 
     /**
      * Apply a filter based on a column
@@ -408,5 +419,21 @@ class Filter
             $currentValue,
             $expectedValue
         );
+    }
+
+    /**
+     * @param string $whereType
+     */
+    public function setWhereType($whereType)
+    {
+        $this->whereType = $whereType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWhereType()
+    {
+        return $this->whereType;
     }
 }

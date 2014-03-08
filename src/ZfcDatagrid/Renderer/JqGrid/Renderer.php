@@ -3,11 +3,16 @@ namespace ZfcDatagrid\Renderer\JqGrid;
 
 use ZfcDatagrid\Renderer\AbstractRenderer;
 use ZfcDatagrid\Column;
+use ZfcDatagrid\Filter as DatagridFilter;
 use Zend\Http\PhpEnvironment\Request as HttpRequest;
 use Zend\View\Model\JsonModel;
 
 class Renderer extends AbstractRenderer
 {
+    /**
+     * @var bool
+     */
+    protected $singleSearchEnabled = true;
 
     public function getName()
     {
@@ -113,18 +118,29 @@ class Renderer extends AbstractRenderer
         
         $request = $this->getRequest();
         $isSearch = $request->getPost($parameterNames['isSearch']);
-        if ($isSearch == 'true') {
+        if ($isSearch == 'true' || $request->getPost('singleSearch')) {
             // User filtering
             foreach ($this->getColumns() as $column) {
                 /* @var $column \ZfcDatagrid\Column\AbstractColumn */
                 if ($request->getPost($column->getUniqueId()) != '') {
                     $value = $request->getPost($column->getUniqueId());
                     
-                    $filter = new \ZfcDatagrid\Filter();
+                    $filter = new DatagridFilter();
                     $filter->setFromColumn($column, $value);
                     
                     $filters[] = $filter;
                     
+                    $column->setFilterActive($filter->getDisplayColumnValue());
+                } elseif ($request->getPost('singleSearch') && $column->isUserFilterEnabled()) {
+                    $value = $request->getPost('singleSearch');
+
+                    $filter = new DatagridFilter();
+                    $column->setFilterDefaultOperation(DatagridFilter::LIKE);
+                    $filter->setFromColumn($column, $value);
+                    $filter->setWhereType(DatagridFilter::DISJUNCTION);
+
+                    $filters[] = $filter;
+
                     $column->setFilterActive($filter->getDisplayColumnValue());
                 }
             }
@@ -179,6 +195,8 @@ class Renderer extends AbstractRenderer
             }
             
             $viewModel->setVariable('columnsRowClickDisabled', $columnsRowClickDisabled);
+            $viewModel->setVariable('singleSearchEnabled', $this->singleSearchEnabled);
+            $viewModel->setVariable('singleSearchTemplate', 'zfc-datagrid/renderer/jqGrid/singlesearch');
         }
         
         return $viewModel;
@@ -224,5 +242,21 @@ class Renderer extends AbstractRenderer
             'total' => $this->getPaginator()->count(),
             'records' => $this->getPaginator()->getTotalItemCount()
         );
+    }
+
+    /**
+     * @param boolean $singleSearchEnabled
+     */
+    public function setSingleSearchEnabled($singleSearchEnabled)
+    {
+        $this->singleSearchEnabled = $singleSearchEnabled;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSingleSearchEnabled()
+    {
+        return $this->singleSearchEnabled;
     }
 }

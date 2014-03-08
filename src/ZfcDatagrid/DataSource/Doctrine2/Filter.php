@@ -14,6 +14,11 @@ class Filter
      */
     private $qb;
 
+    /**
+     * @var
+     */
+    private $whereType = DatagridFilter::CONJUNCTION;
+
     public function __construct(QueryBuilder $qb)
     {
         $this->qb = $qb;
@@ -132,8 +137,12 @@ class Filter
         if (count($wheres) > 0) {
             $orWhere = $qb->expr()->orX();
             $orWhere->addMultiple($wheres);
-            
-            $qb->andWhere($orWhere);
+
+            if ($filter->getWhereType() == DatagridFilter::DISJUNCTION) {
+                $qb->orWhere($orWhere);
+            } else {
+                $qb->andWhere($orWhere);
+            }
         }
     }
 }

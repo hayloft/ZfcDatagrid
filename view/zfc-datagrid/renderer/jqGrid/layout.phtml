@@ -153,6 +153,16 @@ if($paginator->getItemCountPerPage() === $paginator->getTotalItemCount()){
 
 <?php echo $this->partial($this->templateToolbar);?>
 
+<?php
+if($this->singleSearchEnabled) {
+    /*foreach ($this->columns as $column) {
+        $column->setUserFilterDisabled(true);
+    }*/
+
+    echo $this->partial($this->singleSearchTemplate);
+}
+?>
+
 <table id="<?php echo $this->gridId; ?>" class="<?php echo implode(' ', $tableClasses); ?>"></table>
 <div id="<?php echo $this->gridId; ?>_pager"></div>
 <iframe name="<?php echo $this->gridId; ?>_fileFrame" id="<?php echo $this->gridId; ?>_fileFrame" src="about:none" style="display: none;"></iframe>
@@ -198,6 +208,11 @@ var grid_<?php echo $this->gridId; ?> = $('#<?php echo $this->gridId; ?>').jqGri
         <?php echo $parameterNames['columnsGroupByLocal']?>: function(){
             return $('#<?php echo $this->gridId.'_'.$parameterNames['columnsGroupByLocal']; ?>').val();
         }
+        <?php if($this->singleSearchEnabled): ?>
+        ,'singleSearch': function(){
+            return $('#<?php echo $this->gridId; ?>_singlesearch_query').val();
+        }
+        <?php endif; ?>
         <?php
         if(count($parametersHtml) > 0){
             echo ',';
@@ -285,8 +300,29 @@ var grid_<?php echo $this->gridId; ?> = $('#<?php echo $this->gridId; ?>').jqGri
         return true;
     }
 });
-<?php if($this->isUserFilterEnabled === true):?>
+<?php if($this->isUserFilterEnabled === true && $this->singleSearchEnabled === false):?>
     grid_<?php echo $this->gridId; ?>.jqGrid('filterToolbar');
+<?php endif; ?>
+
+<?php if($this->singleSearchEnabled): ?>
+    $('#gview_<?php echo $this->gridId; ?>').find('.ui-jqgrid-titlebar').after($('#<?php echo $this->gridId; ?>_singlesearch'));
+
+    var typewatch<?php echo $this->gridId; ?> = (function() {
+        var timer = 0;
+        return function(callback, ms){
+            clearTimeout (timer);
+            timer = setTimeout(callback, ms);
+        }
+    })();
+
+    $('#<?php echo $this->gridId; ?>_singlesearch_btn').click(function() {
+        $(grid_<?php echo $this->gridId; ?>).trigger('reloadGrid');
+    });
+    $('#<?php echo $this->gridId; ?>_singlesearch_query').keyup(function() {
+        typewatch<?php echo $this->gridId; ?>(function () {
+            $(grid_<?php echo $this->gridId; ?>).trigger('reloadGrid');
+        }, 500);
+    });
 <?php endif; ?>
 
 /*
