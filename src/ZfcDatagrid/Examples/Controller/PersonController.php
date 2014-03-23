@@ -104,11 +104,11 @@ class PersonController extends AbstractActionController
             $col->setWidth(5);
             $col->setType(new Type\Number());
             $col->setFilterDefaultValue('>=20');
-            
+
             $style = new Style\Color(Style\Color::$RED);
             $style->addByValue($col, 20);
             $col->addStyle($style);
-            
+
             $grid->addColumn($col);
         }
         

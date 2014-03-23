@@ -232,6 +232,22 @@ return array(
             'ZfcDatagrid\Examples\Controller\Category' => 'ZfcDatagrid\Examples\Controller\CategoryController'
         )
     ),
+    'bjyauthorize' => array(
+        'guards' => array(
+            'BjyAuthorize\Guard\Controller' => array(
+                array(
+                    'controller' => array(
+                        'ZfcDatagrid\Examples\Controller\Person',
+                        'ZfcDatagrid\Examples\Controller\PersonDoctrine2',
+                        'ZfcDatagrid\Examples\Controller\PersonZend',
+                        'ZfcDatagrid\Examples\Controller\Minimal',
+                        'ZfcDatagrid\Examples\Controller\Category',
+                    ),
+                    'roles'      => array('guest'),
+                ),
+            ),
+        ),
+    ),
     
     'router' => array(
         'routes' => array(

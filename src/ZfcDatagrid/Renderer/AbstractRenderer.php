@@ -692,9 +692,9 @@ abstract class AbstractRenderer implements RendererInterface
         $viewModel->setVariable('filters', $this->getFilters());
         
         $viewModel->setVariable('rowClickAction', $grid->getRowClickAction());
-        
+
         $viewModel->setVariable('isUserFilterEnabled', $grid->isUserFilterEnabled());
-        
+
         /*
          * renderer specific parameter names
          */
@@ -703,7 +703,7 @@ abstract class AbstractRenderer implements RendererInterface
         if ($this->isExport() === false) {
             $parameterNames = $optionsRenderer['parameterNames'];
             $viewModel->setVariable('parameterNames', $parameterNames);
-            
+
             $activeParameters = array();
             $activeParameters[$parameterNames['currentPage']] = $this->getCurrentPageNumber();
             {
@@ -713,7 +713,7 @@ abstract class AbstractRenderer implements RendererInterface
                     $sortColumns[] = $sortCondition['column']->getUniqueId();
                     $sortDirections[] = $sortCondition['sortDirection'];
                 }
-                
+
                 $activeParameters[$parameterNames['sortColumns']] = implode(',', $sortColumns);
                 $activeParameters[$parameterNames['sortDirections']] = implode(',', $sortDirections);
             }

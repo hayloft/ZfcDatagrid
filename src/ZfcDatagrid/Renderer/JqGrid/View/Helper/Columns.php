@@ -80,7 +80,6 @@ class Columns extends AbstractHelper implements ServiceLocatorAwareInterface
         
         foreach ($columns as $column) {
             /* @var $column \ZfcDatagrid\Column\AbstractColumn */
-            
             $options = array(
                 'name' => (string) $column->getUniqueId(),
                 'index' => (string) $column->getUniqueId(),

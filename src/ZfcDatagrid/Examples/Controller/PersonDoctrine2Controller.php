@@ -125,7 +125,8 @@ class PersonDoctrine2Controller extends AbstractActionController
             $col->setType($colType);
             $grid->addColumn($col);
         }
-        
+
+        $grid->setRendererName('jqGrid');
         $grid->render();
         
         return $grid->getResponse();
